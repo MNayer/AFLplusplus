@@ -794,6 +794,8 @@ void cull_queue(afl_state_t *afl) {
    go into config.h. */
 
 u32 calculate_score(afl_state_t *afl, struct queue_entry *q) {
+	// TODO DEBUG
+	printf("Calculate score for %s\n", q->fname);
 
   u32 avg_exec_us = afl->total_cal_us / afl->total_cal_cycles;
   u32 avg_bitmap_size = afl->total_bitmap_size / afl->total_bitmap_entries;
