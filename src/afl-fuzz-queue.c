@@ -917,7 +917,7 @@ u32 calculate_score(afl_state_t *afl, struct queue_entry *q) {
 
 	u8 *command = (u8*) calloc(1024, sizeof(u8));
 	float vscore = 0.;
-	snprintf(command, 1024, "./vscore %s", q->fname);
+	snprintf(command, 1024, "vscore %s", q->fname);
 	FILE *fp = NULL;
 	fp = popen(command, "r");
 	if (unlikely(fp == NULL)) {
