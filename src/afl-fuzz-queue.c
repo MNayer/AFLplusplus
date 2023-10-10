@@ -915,6 +915,14 @@ u32 calculate_score(afl_state_t *afl, struct queue_entry *q) {
 
 	/* Adjust score based on cummulative vulnerability scores of the path */
 
+	// DEBUG
+	char *out_env = getenv("OUT");
+	if (out_env == NULL) {
+		printf("out_env: NULL\n");
+	} else {
+		printf("out_env: %s\n", out_env);
+	}
+
 	u8 *command = (u8*) calloc(1024, sizeof(u8));
 	int result = -1;
 	float vscore = 0.;
