@@ -26,6 +26,8 @@
 #include <limits.h>
 #include <ctype.h>
 #include <math.h>
+#include <stdlib.h> // TODO REMOVE (only used for system())
+#include <stdio.h> // TODO REMOVE (only used for snprintf)
 
 /* select next queue entry based on alias algo - fast! */
 
@@ -794,8 +796,6 @@ void cull_queue(afl_state_t *afl) {
    go into config.h. */
 
 u32 calculate_score(afl_state_t *afl, struct queue_entry *q) {
-	// TODO DEBUG
-	printf("Calculate score for %s\n", q->fname);
 
   u32 avg_exec_us = afl->total_cal_us / afl->total_cal_cycles;
   u32 avg_bitmap_size = afl->total_bitmap_size / afl->total_bitmap_entries;
@@ -844,6 +844,7 @@ u32 calculate_score(afl_state_t *afl, struct queue_entry *q) {
     }
 
   }
+
 
   /* Adjust score based on bitmap size. The working theory is that better
      coverage translates to better targets. Multiplier from 0.25x to 3x. */
@@ -911,6 +912,24 @@ u32 calculate_score(afl_state_t *afl, struct queue_entry *q) {
       perf_score *= 5;
 
   }
+
+	/* Adjust score based on cummulative vulnerability scores of the path */
+
+	u8 *command = (u8*) calloc(1024, sizeof(u8));
+	float vscore = 0.;
+	snprintf(command, 1024, "./vscore %s", q->fname);
+	FILE *fp = NULL;
+	fp = popen(command, "r");
+	if (unlikely(fp == NULL)) {
+		// ERROR
+		exit(1);
+	}
+	fscanf(fp, "%f", &vscore);
+	free(command);
+	pclose(fp);
+
+	perf_score *= vscore;
+
 
   u32         n_items;
   double      factor = 1.0;
